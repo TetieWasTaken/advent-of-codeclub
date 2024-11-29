@@ -1,6 +1,5 @@
 import { formData } from "./types";
-/*import { addData } from "./firebase/addData";
-import { updateData } from "./firebase/updateData";*/
+import { addData } from "./firebase/addData";
 
 class SubmitHelper {
   private userId: string;
@@ -10,17 +9,26 @@ class SubmitHelper {
   }
 
   /**
-   * Store images in the public Uploads folder
+   * Store images in the public Uploads folder by calling the API
+   * @internal
    * @param file - The file to store
-   * @returns Promise<void>
+   * @returns URL of the stored image
    */
-  private async storeImages(file: File): Promise<void> {
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-    reader.onload = async () => {
-      // const buffer = Buffer.from(reader.result as ArrayBuffer);
-      // fs.writeFileSync(`public/uploads/${file.name}`, buffer);
-    };
+  private async storeImages(file: File): Promise<string> {
+    console.log("Storing image", file);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    console.log(response);
+
+    const data = await response.json();
+    console.log("Image stored", data);
+    return data.filePath;
   }
 
   /**
@@ -30,15 +38,21 @@ class SubmitHelper {
    * @returns void
    */
   public async submit(formData: formData /* _index: number */): Promise<void> {
-    await Promise.all(
-      formData.files.map(async (file) => {
-        await this.storeImages(file);
-      }),
+    console.log("Submitting form", formData);
+    const imageUrls = await Promise.all(
+      formData.files.map((image) => this.storeImages(image)),
     );
-    /*addData(`users/${this.userId}/forms`, {
-      index,
-      createdAt: new Date().toISOString(),
-    });*/
+
+    const data = {
+      text: formData.text,
+      note: formData.note,
+      images: imageUrls,
+    };
+
+    addData(`users/${this.userId}/forms`, {
+      ...data,
+      timestamp: new Date().toISOString(),
+    });
   }
 }
 
