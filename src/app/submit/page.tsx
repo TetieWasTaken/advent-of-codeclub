@@ -14,16 +14,16 @@ export default function SubmitPage() {
     files: [],
   });
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: { target: { files: any } }) => {
     const selectedFiles = e.target.files;
     setFormData({
       ...formData,
-      files: [...formData.files, ...Array.from(selectedFiles)],
+      files: [...formData.files, ...Array.from(selectedFiles) as File[]],
     });
   };
 
@@ -43,7 +43,7 @@ export default function SubmitPage() {
 
   if (!user) return null;
   const submitHelper = new SubmitHelper(user.uid);
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     console.log("Submitted Data:", formData);
     await submitHelper.submit(formData);
