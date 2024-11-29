@@ -1,6 +1,6 @@
 import { formData } from "./types";
-import { addData } from "./firebase/addData";
-import { updateData } from "./firebase/updateData";
+/*import { addData } from "./firebase/addData";
+import { updateData } from "./firebase/updateData";*/
 
 class SubmitHelper {
   private userId: string;
@@ -18,7 +18,7 @@ class SubmitHelper {
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
     reader.onload = async () => {
-      const buffer = Buffer.from(reader.result as ArrayBuffer);
+      // const buffer = Buffer.from(reader.result as ArrayBuffer);
       // fs.writeFileSync(`public/uploads/${file.name}`, buffer);
     };
   }
@@ -29,7 +29,7 @@ class SubmitHelper {
    * @param index - The index of the
    * @returns void
    */
-  public async submit(formData: formData, index: number): Promise<void> {
+  public async submit(formData: formData, _index: number): Promise<void> {
     await Promise.all(
       formData.files.map(async (file) => {
         await this.storeImages(file);

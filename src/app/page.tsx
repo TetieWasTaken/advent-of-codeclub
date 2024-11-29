@@ -17,12 +17,12 @@ const today = new Date().getDate();
 // TODO: FIREBASE SECURITY RULES
 
 export default function Home() {
-  const [visibleAssignments, setVisibleAssignments] = useState(
+  const [visibleAssignments, _setVisibleAssignments] = useState(
     assignments.slice(0, today),
   );
   const router = useRouter();
 
-  const [user, setUser] = useState<User | null>(null);
+  const [_user, setUser] = useState<User | null>(null);
   const auth = new FirebaseAuth();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
