@@ -29,7 +29,7 @@ class SubmitHelper {
    * @param index - The index of the
    * @returns void
    */
-  public async submit(formData: formData, _index: number): Promise<void> {
+  public async submit(formData: formData /* _index: number */): Promise<void> {
     await Promise.all(
       formData.files.map(async (file) => {
         await this.storeImages(file);

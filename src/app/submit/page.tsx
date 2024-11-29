@@ -46,7 +46,7 @@ export default function SubmitPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitted Data:", formData);
-    await submitHelper.submit(formData, 0);
+    await submitHelper.submit(formData);
     alert("Your submission has been received!");
     setFormData({ text: "", note: "", files: [] });
     router.push("/");
