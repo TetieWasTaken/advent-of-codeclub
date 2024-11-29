@@ -1,5 +1,10 @@
 import { formData } from "./types";
 import { addData } from "./firebase/addData";
+import { PutBlobResult } from "@vercel/blob";
+
+interface ExtendedPutBlobResult extends PutBlobResult {
+  filePath: string;
+}
 
 class SubmitHelper {
   private userId: string;
@@ -14,21 +19,19 @@ class SubmitHelper {
    * @param file - The file to store
    * @returns URL of the stored image
    */
-  private async storeImages(file: File): Promise<string> {
+  private async storeImages(file: File): Promise<PutBlobResult> {
     console.log("Storing image", file);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await fetch("/api/upload", {
+    const response = await fetch(`/api/upload?filename=${file.name}`, {
       method: "POST",
-      body: formData,
+      body: file,
     });
 
     console.log(response);
 
-    const data = await response.json();
-    console.log("Image stored", data);
-    return data.filePath;
+    const newBlob = await response.json() as PutBlobResult;
+    console.log(newBlob);
+    return newBlob;
   }
 
   /**
@@ -41,12 +44,14 @@ class SubmitHelper {
     console.log("Submitting form", formData);
     const imageUrls = await Promise.all(
       formData.files.map((image) => this.storeImages(image)),
-    );
+    ) as ExtendedPutBlobResult[];
+
+    console.log("Image URLs", imageUrls);
 
     const data = {
       text: formData.text,
       note: formData.note,
-      images: imageUrls,
+      images: imageUrls.map((image) => image.filePath),
     };
 
     addData(`users/${this.userId}/forms`, {

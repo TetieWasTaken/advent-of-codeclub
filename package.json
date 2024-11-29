@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/formidable": "^3.4.5",
     "@vercel/analytics": "^1.4.1",
+    "@vercel/blob": "^0.26.0",
     "@vercel/speed-insights": "^1.1.0",
     "firebase": "^11.0.2",
     "formidable": "^3.5.2",

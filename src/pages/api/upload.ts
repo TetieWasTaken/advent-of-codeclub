@@ -1,7 +1,8 @@
-import formidable from "formidable";
-import fs from "fs";
+//import formidable from "formidable";
+// import fs from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
-import path from "path";
+// import path from "path";
+import { put } from "@vercel/blob";
 
 export const config = {
   api: {
@@ -15,36 +16,21 @@ export default async function handler(
 ) {
   console.log("Upload API called");
   if (req.method === "POST") {
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    const form = formidable({
-      multiples: false,
-      uploadDir,
-      keepExtensions: true,
-    });
+    const { searchParams } = new URL(
+      `http://${process.env.HOST ?? "localhost"}${req.url}`,
+    );
+    const filename = searchParams.get("filename");
 
-    // Ensure the upload directory exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    if (!filename) {
+      res.status(400).json({ error: "Missing filename" });
+      return;
     }
 
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "File upload failed" });
-      }
-
-      if (!files.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-
-      console.log("File uploaded", files.file);
-      console.log("File path", files.file[0].filepath);
-
-      res.status(200).json({
-        message: "File uploaded successfully",
-        filePath: `${files.file[0].filepath}`, // Return relative path for the frontend
-      });
+    const blob = await put(filename, req, {
+      access: "public",
     });
+
+    res.status(200).json({ filePath: blob.url });
   } else {
     res.status(405).json({ error: "Method not allowed" });
   }
