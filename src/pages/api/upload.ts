@@ -1,5 +1,6 @@
 import formidable from "formidable";
 import fs from "fs";
+import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 
 export const config = {
@@ -8,7 +9,10 @@ export const config = {
   },
 };
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   console.log("Upload API called");
   if (req.method === "POST") {
     const uploadDir = path.join(process.cwd(), "public/uploads");
