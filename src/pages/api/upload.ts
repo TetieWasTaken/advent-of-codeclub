@@ -38,7 +38,7 @@ export default async function handler(req, res) {
 
       res.status(200).json({
         message: "File uploaded successfully",
-        filePath: `/uploads/${files.file[0].filepath}`, // Return relative path for the frontend
+        filePath: `${files.file[0].filepath}`, // Return relative path for the frontend
       });
     });
   } else {
