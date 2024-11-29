@@ -14,17 +14,21 @@ export default function SubmitPage() {
     files: [],
   });
 
-  const handleInputChange = (e: { target: { name: any; value: any } }) => {
+  const handleInputChange = (
+    e: { target: { name: string; value: string } },
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e: { target: { files: any } }) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
-    setFormData({
-      ...formData,
-      files: [...formData.files, ...Array.from(selectedFiles) as File[]],
-    });
+    if (selectedFiles) {
+      setFormData({
+        ...formData,
+        files: [...formData.files, ...Array.from(selectedFiles) as File[]],
+      });
+    }
   };
 
   const router = useRouter();
