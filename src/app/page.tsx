@@ -17,8 +17,7 @@ const today = new Date().getDate();
 // TODO: FIREBASE SECURITY RULES
 
 export default function Home() {
-  const [visibleAssignments/*_setVisibleAssignments*/
-  ] = useState(
+  const [visibleAssignments /*_setVisibleAssignments*/] = useState(
     assignments.slice(0, today),
   );
   const router = useRouter();
