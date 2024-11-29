@@ -1,7 +1,6 @@
 import { formData } from "./types";
 import { addData } from "./firebase/addData";
 import { updateData } from "./firebase/updateData";
-import fs from "fs";
 
 class SubmitHelper {
   private userId: string;
@@ -20,7 +19,7 @@ class SubmitHelper {
     reader.readAsArrayBuffer(file);
     reader.onload = async () => {
       const buffer = Buffer.from(reader.result as ArrayBuffer);
-      fs.writeFileSync(`public/uploads/${file.name}`, buffer);
+      // fs.writeFileSync(`public/uploads/${file.name}`, buffer);
     };
   }
 
