@@ -38,8 +38,7 @@ export default function SubmitPage() {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setUser(user);
-      if (user) {
-      } else {
+      if (!user) {
         router.push("/auth");
       }
     });
@@ -49,7 +48,6 @@ export default function SubmitPage() {
   const submitHelper = new SubmitHelper(user.uid);
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
     await submitHelper.submit(formData);
     alert("Your submission has been received!");
     setFormData({ text: "", note: "", files: [] });

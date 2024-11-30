@@ -20,17 +20,12 @@ class SubmitHelper {
    * @returns URL of the stored image
    */
   private async storeImages(file: File): Promise<PutBlobResult> {
-    console.log("Storing image", file);
-
     const response = await fetch(`/api/upload?filename=${file.name}`, {
       method: "POST",
       body: file,
     });
 
-    console.log(response);
-
     const newBlob = await response.json() as PutBlobResult;
-    console.log(newBlob);
     return newBlob;
   }
 
@@ -41,12 +36,9 @@ class SubmitHelper {
    * @returns void
    */
   public async submit(formData: formData /* _index: number */): Promise<void> {
-    console.log("Submitting form", formData);
     const imageUrls = await Promise.all(
       formData.files.map((image) => this.storeImages(image)),
     ) as ExtendedPutBlobResult[];
-
-    console.log("Image URLs", imageUrls);
 
     const data = {
       text: formData.text,

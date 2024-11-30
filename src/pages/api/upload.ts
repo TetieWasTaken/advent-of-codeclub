@@ -14,7 +14,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  console.log("Upload API called");
   if (req.method === "POST") {
     const { searchParams } = new URL(
       `http://${process.env.HOST ?? "localhost"}${req.url}`,

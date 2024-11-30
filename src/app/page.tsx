@@ -4,22 +4,21 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FirebaseAuth } from "@/firebase/auth";
 import type { User } from "firebase/auth";
+import { TaskHelper } from "@/tasks";
+import type { Task } from "@/types";
 
-const assignments = [
-  {
-    title: "Lorem Ipsum",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  },
-];
-
-const today = new Date().getDate();
+const taskHelper = new TaskHelper(new Date());
 
 // TODO: FIREBASE SECURITY RULES
 
 export default function Home() {
-  const [visibleAssignments /*_setVisibleAssignments*/] = useState(
-    assignments.slice(0, today),
-  );
+  const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
+  useEffect(() => {
+    taskHelper.getVisibleTasks().then((tasks) => {
+      setVisibleTasks(tasks);
+    });
+  }, []);
+
   const router = useRouter();
 
   const [/*_user*/, setUser] = useState<User | null>(null);
@@ -27,8 +26,7 @@ export default function Home() {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setUser(user);
-      if (user) {
-      } else {
+      if (!user) {
         router.push("/auth");
       }
     });
@@ -40,7 +38,7 @@ export default function Home() {
         🎄 Advent of Code Club 🎄
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {visibleAssignments.map((assignment, index) => (
+        {visibleTasks.map((task, index) => (
           <div
             key={index}
             className="relative bg-gray-700 border border-gray-600 rounded-lg shadow-lg p-6 hover:shadow-2xl hover:-translate-y-1 hover:border-green-600 transition transform duration-300"
@@ -49,9 +47,9 @@ export default function Home() {
               {index + 1}
             </div>
             <h2 className="text-xl font-semibold text-gray-100 mb-3">
-              {assignment.title}
+              {task.title}
             </h2>
-            <p className="text-gray-400 mb-4">{assignment.description}</p>
+            <p className="text-gray-400 mb-4">{task.description}</p>
             <button
               className="bg-green-600 text-white font-medium py-2 px-4 rounded hover:bg-green-700 transition duration-300"
               onClick={() => router.push(`/submit?index=${index}`)}
