@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { formData } from "@/types";
 import { SubmitHelper } from "@/submit";
 import { User } from "firebase/auth";
 import { FirebaseAuth } from "@/firebase/auth";
+import { isValidTask } from "@/tasks";
 
 export default function SubmitPage() {
   const [formData, setFormData] = useState<formData>({
@@ -13,6 +14,7 @@ export default function SubmitPage() {
     note: "",
     files: [],
   });
+  const [task, setTask] = useState<string | null>(null);
 
   const handleInputChange = (
     e: { target: { name: string; value: string } },
@@ -32,6 +34,7 @@ export default function SubmitPage() {
   };
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [user, setUser] = useState<User | null>(null);
   const auth = new FirebaseAuth();
@@ -43,6 +46,22 @@ export default function SubmitPage() {
       }
     });
   }, [router]);
+
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const paramValue = searchParams.get("id");
+    if (paramValue) {
+      const id = atob(paramValue);
+      isValidTask(id).then((isValid) => {
+        if (!isValid) {
+          router.push("/");
+        } else {
+          setTask(id);
+        }
+      });
+    }
+  }, [searchParams]);
 
   if (!user) return null;
   const submitHelper = new SubmitHelper(user.uid);

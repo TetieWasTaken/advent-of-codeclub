@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { FirebaseAuth } from "@/firebase/auth";
 import type { User } from "firebase/auth";
 import { TaskHelper } from "@/tasks";
-import type { Task } from "@/types";
+import type { ApiTask } from "@/types";
 
 const taskHelper = new TaskHelper(new Date());
 
 // TODO: FIREBASE SECURITY RULES
 
 export default function Home() {
-  const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
+  const [visibleTasks, setVisibleTasks] = useState<ApiTask[]>([]);
   useEffect(() => {
     taskHelper.getVisibleTasks().then((tasks) => {
       setVisibleTasks(tasks);
@@ -52,7 +52,7 @@ export default function Home() {
             <p className="text-gray-400 mb-4">{task.description}</p>
             <button
               className="bg-green-600 text-white font-medium py-2 px-4 rounded hover:bg-green-700 transition duration-300"
-              onClick={() => router.push(`/submit?index=${index}`)}
+              onClick={() => router.push(`/submit?id=${btoa(task.id)}`)}
             >
               Submit
             </button>

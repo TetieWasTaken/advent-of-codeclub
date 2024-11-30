@@ -1,5 +1,6 @@
 import { requestData } from "./firebase/requestData";
-import type { ApiTask, Task } from "./types";
+import { documentExists } from "./firebase/exists";
+import type { ApiTask } from "./types";
 
 class TaskHelper {
   private date: Date;
@@ -10,18 +11,22 @@ class TaskHelper {
 
   /**
    * Retrieve visible tasks from Firestore
-   * @returns Promise<Task[]>
+   * @returns Promise<ApiTask[]>
    */
-  public async getVisibleTasks(): Promise<Task[]> {
+  public async getVisibleTasks(): Promise<ApiTask[]> {
     const data = await requestData("tasks");
     const tasks = (data as ApiTask[]).filter((task: ApiTask) => {
       const newTaskId = task.id + "000";
       const taskDate = new Date(Number(newTaskId));
       return taskDate.getDate() <= this.date.getDate();
-    }) as Task[];
+    });
 
     return tasks;
   }
 }
 
-export { TaskHelper };
+async function isValidTask(taskId: string): Promise<boolean> {
+  return await documentExists(`tasks/${taskId}`);
+}
+
+export { isValidTask, TaskHelper };
