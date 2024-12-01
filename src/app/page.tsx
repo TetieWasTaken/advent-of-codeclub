@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FirebaseAuth } from "@/firebase/auth";
 import type { User } from "firebase/auth";
 import { TaskHelper, taskSubmitted } from "@/tasks";
-import type { ApiTask, Task } from "@/types";
+import type { Task } from "@/types";
 
 const taskHelper = new TaskHelper(new Date());
 
