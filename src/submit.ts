@@ -32,10 +32,10 @@ class SubmitHelper {
   /**
    * Submit the form to firestore
    * @param formData - The form data to submit
-   * @param index - The index of the
+   * @param id - The task id
    * @returns void
    */
-  public async submit(formData: formData /* _index: number */): Promise<void> {
+  public async submit(formData: formData, id: string): Promise<void> {
     const imageUrls = await Promise.all(
       formData.files.map((image) => this.storeImages(image)),
     ) as ExtendedPutBlobResult[];
@@ -49,7 +49,7 @@ class SubmitHelper {
     addData(`users/${this.userId}/forms`, {
       ...data,
       timestamp: new Date().toISOString(),
-    });
+    }, id);
   }
 }
 

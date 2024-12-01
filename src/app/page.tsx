@@ -4,24 +4,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FirebaseAuth } from "@/firebase/auth";
 import type { User } from "firebase/auth";
-import { TaskHelper } from "@/tasks";
-import type { ApiTask } from "@/types";
+import { TaskHelper, taskSubmitted } from "@/tasks";
+import type { ApiTask, Task } from "@/types";
 
 const taskHelper = new TaskHelper(new Date());
 
 // TODO: FIREBASE SECURITY RULES
 
 export default function Home() {
-  const [visibleTasks, setVisibleTasks] = useState<ApiTask[]>([]);
-  useEffect(() => {
-    taskHelper.getVisibleTasks().then((tasks) => {
-      setVisibleTasks(tasks);
-    });
-  }, []);
+  const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
 
   const router = useRouter();
 
-  const [/*_user*/, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const auth = new FirebaseAuth();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -30,10 +25,28 @@ export default function Home() {
         router.push("/auth");
       }
     });
-  }, [router]);
+  }, [router, auth]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    taskHelper.getVisibleTasks().then((tasks: Task[]) => {
+      for (const task of tasks as Task[]) {
+        console.log(task);
+        taskSubmitted(task.id, user!.uid).then(
+          (submitted) => {
+            console.log(submitted);
+            task.submitted = submitted;
+          },
+        );
+      }
+
+      setVisibleTasks(tasks);
+    });
+  }, [user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-800 to-gray-900 text-gray-200 p-6">
+    <div className="min-h-screen bg-gray-800 text-gray-200 p-6">
       <h1 className="text-4xl font-bold text-green-500 text-center mb-8">
         🎄 Advent of Code Club 🎄
       </h1>
@@ -41,18 +54,40 @@ export default function Home() {
         {visibleTasks.map((task, index) => (
           <div
             key={index}
-            className="relative bg-gray-700 border border-gray-600 rounded-lg shadow-lg p-6 hover:shadow-2xl hover:-translate-y-1 hover:border-green-600 transition transform duration-300"
+            className={`relative border rounded-lg shadow-lg p-6 hover:shadow-2xl hover:-translate-y-1 transition transform duration-300 ${
+              task.submitted
+                ? "bg-gray-800 border-gray-700"
+                : "bg-gray-700 border-gray-600 hover:border-green-600"
+            }`}
           >
             <div className="absolute top-3 right-3 text-gray-500 text-xl font-bold">
               {index + 1}
             </div>
-            <h2 className="text-xl font-semibold text-gray-100 mb-3">
+            <h2
+              className={`text-xl font-semibold ${
+                task.submitted ? "text-gray-500" : "text-gray-100"
+              } mb-3`}
+            >
               {task.title}
             </h2>
-            <p className="text-gray-400 mb-4">{task.description}</p>
+            <p
+              className={`${
+                task.submitted ? "text-gray-600" : "text-gray-400"
+              } mb-4`}
+            >
+              {task.description}
+            </p>
             <button
-              className="bg-green-600 text-white font-medium py-2 px-4 rounded hover:bg-green-700 transition duration-300"
-              onClick={() => router.push(`/submit?id=${btoa(task.id)}`)}
+              className={`font-medium py-2 px-4 rounded transition duration-300 ${
+                task.submitted
+                  ? "bg-green-900 text-gray-500 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }`}
+              onClick={() => {
+                if (!task.submitted) {
+                  router.push(`/submit?id=${btoa(task.id)}`);
+                }
+              }}
             >
               Submit
             </button>

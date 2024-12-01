@@ -4,11 +4,12 @@ export interface formData {
   files: File[];
 }
 
-export interface Task {
+export interface ApiTask {
   title: string;
   description: string;
+  id: string;
 }
 
-export interface ApiTask extends Task {
-  id: string;
+export interface Task extends ApiTask {
+  submitted?: boolean;
 }

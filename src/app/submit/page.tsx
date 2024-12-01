@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { formData } from "@/types";
+import type { formData, Task } from "@/types";
 import { SubmitHelper } from "@/submit";
 import { User } from "firebase/auth";
 import { FirebaseAuth } from "@/firebase/auth";
-import { isValidTask } from "@/tasks";
+import { isValidTask, TaskHelper } from "@/tasks";
 
 export default function SubmitPage() {
   const [formData, setFormData] = useState<formData>({
@@ -14,7 +14,8 @@ export default function SubmitPage() {
     note: "",
     files: [],
   });
-  const [task, setTask] = useState<string | null>(null);
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [taskData, setTaskData] = useState<Task | null>(null);
 
   const handleInputChange = (
     e: { target: { name: string; value: string } },
@@ -57,17 +58,31 @@ export default function SubmitPage() {
         if (!isValid) {
           router.push("/");
         } else {
-          setTask(id);
+          setTaskId(id);
         }
       });
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (!taskId) return;
+
+    const taskHelper = new TaskHelper(new Date());
+    taskHelper.getVisibleTasks().then((tasks) => {
+      const task = tasks.find((task) => task.id === taskId);
+      if (task) {
+        setTaskData(task);
+      } else {
+        router.push("/");
+      }
+    });
+  }, [taskId]);
+
   if (!user) return null;
   const submitHelper = new SubmitHelper(user.uid);
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    await submitHelper.submit(formData);
+    await submitHelper.submit(formData, taskId!);
     alert("Your submission has been received!");
     setFormData({ text: "", note: "", files: [] });
     router.push("/");
@@ -82,6 +97,14 @@ export default function SubmitPage() {
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto bg-gray-700 p-6 rounded-lg shadow-lg"
       >
+        {taskData && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-green-500 mb-2">
+              {taskData.title}
+            </h2>
+            <p className="text-lg text-gray-300">{taskData.description}</p>
+          </div>
+        )}
         <div className="mb-6">
           <label
             htmlFor="text"
@@ -142,7 +165,6 @@ export default function SubmitPage() {
           )}
         </div>
 
-        {/* Submit Button */}
         <div className="text-center">
           <button
             type="submit"

@@ -29,4 +29,8 @@ async function isValidTask(taskId: string): Promise<boolean> {
   return await documentExists(`tasks/${taskId}`);
 }
 
-export { isValidTask, TaskHelper };
+async function taskSubmitted(taskId: string, userId: string): Promise<boolean> {
+  return await documentExists(`users/${userId}/forms/${taskId}`);
+}
+
+export { isValidTask, TaskHelper, taskSubmitted };
