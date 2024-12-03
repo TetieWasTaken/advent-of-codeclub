@@ -1,17 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FirebaseAuth } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { FirebaseError } from "firebase/app";
-
-const auth = new FirebaseAuth();
+import { addData } from "@/firebase/addData";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [name, setName] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  const auth = new FirebaseAuth();
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      setIsLoggedIn(!!user);
+    });
+  }, [router, auth]);
 
   const handleSignIn = async () => {
     try {
@@ -21,30 +31,33 @@ export default function SignInPage() {
     } catch (error: unknown) {
       if (error instanceof FirebaseError) setError(error.message);
       else if (error instanceof Error) setError(error.message);
-      else setError("An unknown error occurred.");
+      else setError("Onbekende fout opgetreden.");
     }
   };
 
   const handleSignUp = async () => {
     try {
       await auth.signUpWithEmail(email, password, () => {
+        auth.onAuthStateChanged((user) => {
+          if (user) addData(`users/${user.uid}/profile`, { name });
+        });
         router.push("/");
       });
     } catch (error: unknown) {
       if (error instanceof FirebaseError) setError(error.message);
       else if (error instanceof Error) setError(error.message);
-      else setError("An unknown error occurred.");
+      else setError("Onbekende fout opgetreden.");
     }
   };
 
   const handleResetPassword = async () => {
     try {
       await auth.resetPassword(email);
-      setError("Password reset email sent!");
+      setError("Wachtwoord reset email verzonden.");
     } catch (error: unknown) {
       if (error instanceof FirebaseError) setError(error.message);
       else if (error instanceof Error) setError(error.message);
-      else setError("An unknown error occurred.");
+      else setError("Onbekende fout opgetreden.");
     }
   };
 
@@ -52,64 +65,114 @@ export default function SignInPage() {
     try {
       await auth.signOut(() => {
       });
-      setError("Signed out successfully.");
+      setError("Successvol uitgelogd.");
     } catch (error: unknown) {
       if (error instanceof FirebaseError) setError(error.message);
       else if (error instanceof Error) setError(error.message);
-      else setError("An unknown error occurred.");
+      else setError("Onbekende fout opgetreden.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-6 flex flex-col items-center">
-      <h1 className="text-2xl sm:text-3xl font-semibold mb-6">Sign In</h1>
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-6 flex justify-center items-center">
+      <div className="w-full max-w-4xl">
+        {error && (
+          <div className="bg-red-500 text-white p-4 mb-6 rounded-lg shadow-lg">
+            <p className="text-center">{error}</p>
+          </div>
+        )}
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-80 p-3 mb-4 border rounded border-gray-600 bg-gray-800 text-gray-200"
-      />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+            {isLoggedIn
+              ? (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">Welkom terug!</h2>
+                  <p className="mb-4">Je bent ingelogd.</p>
+                </>
+              )
+              : (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">Inloggen</h2>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 mb-4 border rounded border-gray-600 bg-gray-700 text-gray-200"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Wachtwoord"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full p-3 mb-6 border rounded border-gray-600 bg-gray-700 text-gray-200"
+                  />
+                  <button
+                    onClick={handleSignIn}
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full"
+                  >
+                    Inloggen
+                  </button>
+                  <button
+                    onClick={handleResetPassword}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded w-full mt-3"
+                  >
+                    Wachtwoord vergeten
+                  </button>
+                </>
+              )}
+          </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-80 p-3 mb-6 border rounded border-gray-600 bg-gray-800 text-gray-200"
-      />
-
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-      <div className="flex flex-col space-y-3">
-        <button
-          onClick={handleSignIn}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded w-80"
-        >
-          Sign In
-        </button>
-
-        <button
-          onClick={handleSignUp}
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded w-80"
-        >
-          Sign Up
-        </button>
-
-        <button
-          onClick={handleResetPassword}
-          className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded w-80"
-        >
-          Reset Password
-        </button>
-
-        <button
-          onClick={handleSignOut}
-          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded w-80"
-        >
-          Sign Out
-        </button>
+          <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+            {isLoggedIn
+              ? (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">Acties</h2>
+                  <button
+                    onClick={handleSignOut}
+                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded w-full"
+                  >
+                    Uitloggen
+                  </button>
+                </>
+              )
+              : (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">
+                    Account aanmaken
+                  </h2>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    className="w-full p-3 mb-4 border rounded border-gray-600 bg-gray-700 text-gray-200"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Wachtwoord"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full p-3 mb-4 border rounded border-gray-600 bg-gray-700 text-gray-200"
+                  />
+                  <input
+                    type="naam"
+                    placeholder="Bob Alice"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full p-3 mb-4 border rounded border-gray-600 bg-gray-700 text-gray-200"
+                  />
+                  <button
+                    onClick={handleSignUp}
+                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full"
+                  >
+                    Account aanmaken
+                  </button>
+                </>
+              )}
+          </div>
+        </div>
       </div>
     </div>
   );

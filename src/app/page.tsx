@@ -30,20 +30,35 @@ export default function Home() {
   useEffect(() => {
     if (!user) return;
 
-    taskHelper.getVisibleTasks().then((tasks: Task[]) => {
-      for (const task of tasks as Task[]) {
-        console.log(task);
-        taskSubmitted(task.id, user!.uid).then(
-          (submitted) => {
-            console.log(submitted);
-            task.submitted = submitted;
-          },
-        );
-      }
+    (async () => {
+      const tasks = await taskHelper.getVisibleTasks();
 
-      setVisibleTasks(tasks);
-    });
+      const updatedTasks = await Promise.all(
+        tasks.map(async (task) => {
+          const submitted = await taskSubmitted(task.id, user!.uid);
+          return { ...task, submitted };
+        }),
+      );
+
+      setVisibleTasks(updatedTasks);
+    })();
   }, [user]);
+
+  const [expandedDescription, setExpandedDescription] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleDescription = (taskId: string) => {
+    setExpandedDescription((prev) => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(taskId)) {
+        newExpanded.delete(taskId);
+      } else {
+        newExpanded.add(taskId);
+      }
+      return newExpanded;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-800 text-gray-200 p-6">
@@ -70,13 +85,67 @@ export default function Home() {
             >
               {task.title}
             </h2>
-            <p
+            <div
               className={`${
                 task.submitted ? "text-gray-600" : "text-gray-400"
               } mb-4`}
             >
-              {task.description}
-            </p>
+              {task.description.slice(0, 100).split("\\n").map((
+                line,
+                index,
+              ) => (
+                <span key={index}>
+                  {line}
+                  {index <
+                      task.description.slice(0, 100).split("\\n").length - 1 &&
+                    (
+                      <>
+                        <br />
+                        <br />
+                      </>
+                    )}
+                </span>
+              ))}
+              {task.description.length > 100 &&
+                !expandedDescription.has(task.id) && (
+                <>
+                  {"..."}
+                  <button
+                    onClick={() => toggleDescription(task.id)}
+                    className="text-green-500 inline-block"
+                  >
+                    Uitklappen
+                  </button>
+                </>
+              )}
+              {expandedDescription.has(task.id) && (
+                <>
+                  {task.description.slice(100).split("\\n").map((
+                    line,
+                    index,
+                  ) => (
+                    <span key={index}>
+                      {line}
+                      {index <
+                          task.description.slice(100).split("\\n").length - 1 &&
+                        (
+                          <>
+                            <br />
+                            <br />
+                          </>
+                        )}
+                    </span>
+                  ))}
+                  <button
+                    onClick={() => toggleDescription(task.id)}
+                    className="text-green-500 inline-block"
+                  >
+                    Inklappen
+                  </button>
+                </>
+              )}
+            </div>
+
             <button
               className={`font-medium py-2 px-4 rounded transition duration-300 ${
                 task.submitted
@@ -89,7 +158,7 @@ export default function Home() {
                 }
               }}
             >
-              Submit
+              Inleveren
             </button>
           </div>
         ))}
