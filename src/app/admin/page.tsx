@@ -7,13 +7,14 @@ import { FirebaseAuth } from "@/firebase/auth";
 
 function isAdmin(user: User | null) {
   // todo: Send API request to check if user is admin
-  return true;
+  if (user) return true;
+  return false;
 }
 
 export default function SubmitPage() {
   const router = useRouter();
 
-  const [user, setUser] = useState<User | null>(null);
+  const [, setUser] = useState<User | null>(null);
   const auth = new FirebaseAuth();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
