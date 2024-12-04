@@ -92,7 +92,7 @@ export default function SubmitPage() {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     await submitHelper.submit(formData, taskId!);
-    alert("Your submission has been received!");
+    alert("Ingeleverd! 🎉");
     setFormData({ text: "", note: "", files: [] });
     router.push("/");
   };
@@ -131,11 +131,11 @@ export default function SubmitPage() {
               htmlFor="text"
               className="block text-gray-300 text-lg font-medium mb-2"
             >
-              Text
+              Tekst
             </label>
             <textarea
               id="text"
-              name="Antwoord"
+              name="text"
               value={formData.text}
               onChange={handleInputChange}
               rows={4}
@@ -154,7 +154,7 @@ export default function SubmitPage() {
             <input
               id="files"
               type="file"
-              name="Bestanden"
+              name="files"
               multiple
               onChange={handleFileChange}
               className="block w-full text-gray-300 bg-gray-800 border border-gray-600 rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-white hover:file:bg-green-600"
@@ -177,7 +177,7 @@ export default function SubmitPage() {
             </label>
             <textarea
               id="note"
-              name="Aanvulling"
+              name="note"
               value={formData.note}
               onChange={handleInputChange}
               rows={2}

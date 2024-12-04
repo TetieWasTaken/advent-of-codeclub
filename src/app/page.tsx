@@ -9,7 +9,7 @@ import type { Task } from "@/types";
 
 const taskHelper = new TaskHelper(new Date());
 
-// TODO: FIREBASE SECURITY RULES
+// ADD: TRANSITION
 
 export default function Home() {
   const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
@@ -109,10 +109,12 @@ export default function Home() {
               {task.description.length > 100 &&
                 !expandedDescription.has(task.id) && (
                 <>
-                  {"..."}
+                  {"... "}
                   <button
                     onClick={() => toggleDescription(task.id)}
-                    className="text-green-500 inline-block"
+                    className={`${
+                      task.submitted ? "text-gray-500" : "text-green-500"
+                    } inline-block`}
                   >
                     Uitklappen
                   </button>
@@ -135,10 +137,12 @@ export default function Home() {
                           </>
                         )}
                     </span>
-                  ))}
+                  ))}{" "}
                   <button
                     onClick={() => toggleDescription(task.id)}
-                    className="text-green-500 inline-block"
+                    className={`${
+                      task.submitted ? "text-gray-500" : "text-green-500"
+                    } inline-block`}
                   >
                     Inklappen
                   </button>
