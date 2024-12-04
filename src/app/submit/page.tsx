@@ -24,7 +24,7 @@ export default function SubmitPage() {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setUser(user);
-      if (!user) {
+      if (!user || user?.emailVerified === false) {
         router.push("/auth");
       }
     });

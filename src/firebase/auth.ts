@@ -2,6 +2,7 @@ import { auth } from "./init";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
@@ -29,6 +30,8 @@ class FirebaseAuth {
         email,
         password,
       );
+
+      await sendEmailVerification(userCredential.user);
 
       if (redirectCallback) {
         redirectCallback();

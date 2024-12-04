@@ -14,11 +14,19 @@ export default function SignInPage() {
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
 
   const auth = new FirebaseAuth();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsEmailVerified(user.emailVerified);
+        if (!user.emailVerified) {
+          setError("Je email is nog niet geverifieerd, check je mail!");
+        }
+      }
+
       setIsLoggedIn(!!user);
     });
   }, [router, auth]);
@@ -37,9 +45,16 @@ export default function SignInPage() {
 
   const handleSignUp = async () => {
     try {
-      await auth.signUpWithEmail(email, password, () => {
+      if (!newEmail.endsWith("@gsf.nl")) {
+        setError("Je kan alleen registreren met een @gsf.nl email adres.");
+        return;
+      }
+
+      await auth.signUpWithEmail(newEmail, newPassword, () => {
         auth.onAuthStateChanged((user) => {
-          if (user) addData(`users/${user.uid}/profile`, { name });
+          if (user) {
+            addData(`users/${user.uid}/profile`, { name }, "verycoolid");
+          }
         });
         router.push("/");
       });
@@ -88,7 +103,11 @@ export default function SignInPage() {
               ? (
                 <>
                   <h2 className="text-xl font-semibold mb-4">Welkom terug!</h2>
-                  <p className="mb-4">Je bent ingelogd.</p>
+                  <p className="mb-4">
+                    Je bent ingelogd{isEmailVerified
+                      ? "! 🎉"
+                      : " maar je email is nog niet geverifieerd, check je mail!"}
+                  </p>
                 </>
               )
               : (
