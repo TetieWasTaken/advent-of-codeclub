@@ -6,6 +6,7 @@ import { FirebaseAuth } from "@/firebase/auth";
 import type { User } from "firebase/auth";
 import { TaskHelper, taskSubmitted } from "@/tasks";
 import type { Task } from "@/types";
+import { requestData } from "@/firebase/requestData";
 
 const taskHelper = new TaskHelper(new Date());
 
@@ -17,12 +18,19 @@ export default function Home() {
   const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const auth = new FirebaseAuth();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setUser(user);
       if (!user || user?.emailVerified === false) {
         router.push("/auth");
+      } else {
+        requestData(`users/${user.uid}/profile/`).then((data) => {
+          if (data) {
+            setUsername(data[0].name);
+          }
+        });
       }
     });
   }, [router, auth]);
@@ -65,6 +73,14 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-green-500 text-center mb-8">
         🎄 Advent of Code Club 🎄
       </h1>
+      {user && (
+        <button
+          className="absolute top-4 right-4 bg-gray-700 text-gray-200 p-2 rounded-lg shadow-lg flex items-center font-semibold cursor-pointer"
+          onClick={() => router.push("/auth")}
+        >
+          {username}
+        </button>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {visibleTasks.map((task, index) => (
           <div
@@ -76,7 +92,7 @@ export default function Home() {
             }`}
           >
             <div className="absolute top-3 right-3 text-gray-500 text-xl font-bold">
-              {index + 1}
+              {index + 1} dec
             </div>
             <h2
               className={`text-xl font-semibold ${

@@ -7,7 +7,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import type { Auth, User, UserCredential } from "firebase/auth";
+import type {
+  ActionCodeSettings,
+  Auth,
+  User,
+  UserCredential,
+} from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
 // todo: github/sms/google providers
@@ -31,7 +36,12 @@ class FirebaseAuth {
         password,
       );
 
-      await sendEmailVerification(userCredential.user);
+      const actionSettings: ActionCodeSettings = {
+        url: `${window.location.origin}`,
+        handleCodeInApp: true,
+      };
+
+      await sendEmailVerification(userCredential.user, actionSettings);
 
       if (redirectCallback) {
         redirectCallback();
@@ -82,7 +92,12 @@ class FirebaseAuth {
 
   async resetPassword(email: string): Promise<void> {
     try {
-      await sendPasswordResetEmail(this.auth, email);
+      const actionSettings: ActionCodeSettings = {
+        url: `${window.location.origin}/auth?email=${email}`,
+        handleCodeInApp: true,
+      };
+
+      await sendPasswordResetEmail(this.auth, email, actionSettings);
     } catch (error: unknown) {
       if (error instanceof FirebaseError) throw new Error(error.message);
       else throw new Error("An unknown error occurred.");
