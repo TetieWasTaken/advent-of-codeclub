@@ -10,10 +10,9 @@ import { requestData } from "@/firebase/requestData";
 
 const taskHelper = new TaskHelper(new Date());
 
-// ADD: TRANSITION
-
 export default function Home() {
   const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const router = useRouter();
 
@@ -54,6 +53,8 @@ export default function Home() {
         console.warn(`Error while fetching tasks`);
         setVisibleTasks([]);
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     })();
   }, [user]);
@@ -73,6 +74,17 @@ export default function Home() {
       return newExpanded;
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-800 text-gray-200">
+        <div className="text-center">
+          <div className="loader mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-800 text-gray-200 p-6">
