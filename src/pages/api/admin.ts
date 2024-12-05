@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { put } from "@vercel/blob";
 
 export const config = {
   api: {
@@ -12,22 +11,32 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    if (req.method === "POST") {
+    if (req.method === "GET") {
       const { searchParams } = new URL(
         `http://${process.env.HOST ?? "localhost"}${req.url}`,
       );
-      const filename = searchParams.get("filename");
 
-      if (!filename) {
-        res.status(400).json({ error: "Missing filename" });
+      console.log(searchParams);
+
+      const base64Id = searchParams.get("id");
+
+      console.log(base64Id);
+
+      if (!base64Id) {
+        res.status(400).json({ error: "Missing id" });
         return;
       }
 
-      const blob = await put(filename, req, {
-        access: "public",
-      });
+      const id = atob(base64Id);
 
-      res.status(200).json({ filePath: blob.url });
+      console.log(id);
+      console.log(process.env.ADMIN_ID);
+
+      if (id == process.env.ADMIN_ID) {
+        res.status(200).json({ isAdmin: true });
+      } else {
+        res.status(403).json({ isAdmin: false });
+      }
     } else {
       res.status(405).json({ error: "Method not allowed" });
     }

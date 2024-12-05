@@ -5,10 +5,18 @@ import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
 import { FirebaseAuth } from "@/firebase/auth";
 
-function isAdmin(user: User | null) {
-  // todo: Send API request to check if user is admin
-  if (user) return true;
-  return false;
+interface AdminResponse extends Response {
+  isAdmin: boolean;
+}
+
+async function isAdmin(user: User | null) {
+  if (!user) return false;
+  const response = await fetch(
+    `/api/admin?id=${btoa(user?.uid)}`,
+  ) as AdminResponse;
+
+  const data = await response.json();
+  return data.isAdmin;
 }
 
 export default function SubmitPage() {
@@ -17,13 +25,12 @@ export default function SubmitPage() {
   const [, setUser] = useState<User | null>(null);
   const auth = new FirebaseAuth();
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
       setUser(user);
       if (!user) {
         router.push("/auth");
       } else {
-        // Check if user is admin
-        if (!isAdmin(user)) {
+        if (!(await isAdmin(user))) {
           router.push("/");
         }
       }
