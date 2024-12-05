@@ -90,11 +90,17 @@ export default function SubmitPage() {
 
   const submitHelper = new SubmitHelper(user.uid);
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    await submitHelper.submit(formData, taskId!);
-    alert("Ingeleverd! 🎉");
-    setFormData({ text: "", note: "", files: [] });
-    router.push("/");
+    try {
+      e.preventDefault();
+      await submitHelper.submit(formData, taskId!);
+      alert("Ingeleverd! 🎉");
+      setFormData({ text: "", note: "", files: [] });
+      router.push("/");
+    } catch (error) {
+      console.warn("Error while submitting form");
+      console.error(error);
+      alert("Er is iets fout gegaan bij het inleveren van de opdracht.");
+    }
   };
 
   return (

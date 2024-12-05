@@ -14,23 +14,42 @@ class TaskHelper {
    * @returns Promise<ApiTask[]>
    */
   public async getVisibleTasks(): Promise<ApiTask[]> {
-    const data = await requestData("tasks");
-    const tasks = (data as ApiTask[]).filter((task: ApiTask) => {
-      const newTaskId = task.id + "000";
-      const taskDate = new Date(Number(newTaskId));
-      return taskDate.getDate() <= this.date.getDate();
-    });
+    try {
+      const data = await requestData("tasks");
+      const tasks = (data as ApiTask[]).filter((task: ApiTask) => {
+        const newTaskId = task.id + "000";
+        const taskDate = new Date(Number(newTaskId));
+        return taskDate.getDate() <= this.date.getDate();
+      });
 
-    return tasks;
+      return tasks;
+    } catch (error) {
+      console.warn("Error getting documents");
+      console.error(error);
+      return [];
+    }
   }
 }
 
 async function isValidTask(taskId: string): Promise<boolean> {
-  return await documentExists(`tasks/${taskId}`);
+  try {
+    return await documentExists(`tasks/${taskId}`);
+  } catch (error) {
+    console.warn("Error checking if task exists");
+    console.error(error);
+    return false;
+  }
 }
 
 async function taskSubmitted(taskId: string, userId: string): Promise<boolean> {
-  return await documentExists(`users/${userId}/forms/${taskId}`);
+  try {
+    return await documentExists(`users/${userId}/forms/${taskId}`);
+  } catch (error) {
+    console.warn("Error checking if task is submitted");
+    console.error(error);
+    // True to prevent resubmission
+    return true;
+  }
 }
 
 export { isValidTask, TaskHelper, taskSubmitted };

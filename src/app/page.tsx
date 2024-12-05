@@ -39,16 +39,22 @@ export default function Home() {
     if (!user) return;
 
     (async () => {
-      const tasks = await taskHelper.getVisibleTasks();
+      try {
+        const tasks = await taskHelper.getVisibleTasks();
 
-      const updatedTasks = await Promise.all(
-        tasks.map(async (task) => {
-          const submitted = await taskSubmitted(task.id, user!.uid);
-          return { ...task, submitted };
-        }),
-      );
+        const updatedTasks = await Promise.all(
+          tasks.map(async (task) => {
+            const submitted = await taskSubmitted(task.id, user!.uid);
+            return { ...task, submitted };
+          }),
+        );
 
-      setVisibleTasks(updatedTasks);
+        setVisibleTasks(updatedTasks);
+      } catch (error) {
+        console.warn(`Error while fetching tasks`);
+        setVisibleTasks([]);
+        console.error(error);
+      }
     })();
   }, [user]);
 

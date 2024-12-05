@@ -9,8 +9,13 @@ import { firestore } from "./init";
  * @returns {Promise<void>} - A promise that resolves when the data has been updated in Firestore
  */
 async function updateData(documentPath: string, data: object): Promise<void> {
-  const docRef = doc(firestore, documentPath);
-  await updateDoc(docRef, data);
+  try {
+    const docRef = doc(firestore, documentPath);
+    await updateDoc(docRef, data);
+  } catch (error) {
+    console.warn("Error updating document");
+    console.error(error);
+  }
 }
 
 export { updateData };

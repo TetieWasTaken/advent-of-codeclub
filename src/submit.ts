@@ -20,13 +20,26 @@ class SubmitHelper {
    * @returns URL of the stored image
    */
   private async storeImages(file: File): Promise<PutBlobResult> {
-    const response = await fetch(`/api/upload?filename=${file.name}`, {
-      method: "POST",
-      body: file,
-    });
+    try {
+      const response = await fetch(`/api/upload?filename=${file.name}`, {
+        method: "POST",
+        body: file,
+      });
 
-    const newBlob = await response.json() as PutBlobResult;
-    return newBlob;
+      const newBlob = await response.json() as PutBlobResult;
+      return newBlob;
+    } catch (error) {
+      console.warn("Error uploading file to storage");
+      console.error(error);
+
+      // Not sure if this would work lol
+      return {
+        url: "",
+        downloadUrl: "",
+        pathname: "",
+        contentDisposition: "",
+      };
+    }
   }
 
   /**
@@ -36,20 +49,25 @@ class SubmitHelper {
    * @returns void
    */
   public async submit(formData: formData, id: string): Promise<void> {
-    const imageUrls = await Promise.all(
-      formData.files.map((image) => this.storeImages(image)),
-    ) as ExtendedPutBlobResult[];
+    try {
+      const imageUrls = await Promise.all(
+        formData.files.map((image) => this.storeImages(image)),
+      ) as ExtendedPutBlobResult[];
 
-    const data = {
-      text: formData.text,
-      note: formData.note,
-      images: imageUrls.map((image) => image.filePath),
-    };
+      const data = {
+        text: formData.text,
+        note: formData.note,
+        images: imageUrls.map((image) => image.filePath),
+      };
 
-    addData(`users/${this.userId}/forms`, {
-      ...data,
-      timestamp: new Date().toISOString(),
-    }, id);
+      addData(`users/${this.userId}/forms`, {
+        ...data,
+        timestamp: new Date().toISOString(),
+      }, id);
+    } catch (error) {
+      console.warn("Error while submitting form");
+      console.error(error);
+    }
   }
 }
 

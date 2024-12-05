@@ -21,10 +21,16 @@ async function addData(
   data: object,
   id?: string,
 ): Promise<DocumentReference<object, DocumentData> | void> {
-  if (!id) {
-    return (await addDoc(collection(firestore, collectionPath), data));
-  } else {
-    return (await setDoc(doc(firestore, collectionPath, id), data));
+  try {
+    if (!id) {
+      return (await addDoc(collection(firestore, collectionPath), data));
+    } else {
+      return (await setDoc(doc(firestore, collectionPath, id), data));
+    }
+  } catch (error) {
+    console.warn("Error adding document");
+    console.error(error);
+    return;
   }
 }
 

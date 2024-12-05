@@ -32,8 +32,13 @@ const auth = getAuth(app);
 let analytics = null;
 
 const initAnalytics = async () => {
-  if (await isSupported()) {
-    analytics = getAnalytics(app);
+  try {
+    if (await isSupported()) {
+      analytics = getAnalytics(app);
+    }
+  } catch (error) {
+    console.warn("Error initializing Firebase Analytics");
+    console.error(error);
   }
 };
 
