@@ -180,12 +180,14 @@ export default function SignInPage() {
                     >
                       Uitloggen
                     </button>
-                    <button
-                      onClick={() => router.push("/")}
-                      className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded w-full mt-3"
-                    >
-                      Terug naar home
-                    </button>
+                    {isEmailVerified && (
+                      <button
+                        onClick={() => router.push("/")}
+                        className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded w-full mt-3"
+                      >
+                        Terug naar home
+                      </button>
+                    )}
                   </>
                 )
                 : (
@@ -209,7 +211,7 @@ export default function SignInPage() {
                     />
                     <input
                       type="naam"
-                      placeholder="Bob Alice"
+                      placeholder="Naam (e.g. Alice Bob)"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="w-full p-3 mb-4 border rounded border-gray-600 bg-gray-700 text-gray-200"
