@@ -58,6 +58,7 @@ export default function SignInPage() {
       await auth.signUpWithEmail(newEmail, newPassword, () => {
         auth.onAuthStateChanged((user) => {
           if (user) {
+            addData(`users`, {}, user.uid);
             addData(`users/${user.uid}/profile`, { name }, "verycoolid");
           }
         });

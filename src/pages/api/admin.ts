@@ -16,11 +16,7 @@ export default async function handler(
         `http://${process.env.HOST ?? "localhost"}${req.url}`,
       );
 
-      console.log(searchParams);
-
       const base64Id = searchParams.get("id");
-
-      console.log(base64Id);
 
       if (!base64Id) {
         res.status(400).json({ error: "Missing id" });
@@ -28,9 +24,6 @@ export default async function handler(
       }
 
       const id = atob(base64Id);
-
-      console.log(id);
-      console.log(process.env.ADMIN_ID);
 
       if (id == process.env.ADMIN_ID) {
         res.status(200).json({ isAdmin: true });

@@ -4,9 +4,26 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
 import { FirebaseAuth } from "@/firebase/auth";
+import { AdminHelper } from "@/admin";
 
 interface AdminResponse extends Response {
   isAdmin: boolean;
+}
+
+interface UserForm {
+  imageURLS: string[];
+  note: string;
+  text: string;
+  timestamp: string;
+  taskID: string;
+}
+
+interface UserData {
+  uid: string;
+  email: string;
+  displayName: string;
+  emailVerified: boolean;
+  submissions: UserForm[];
 }
 
 async function isAdmin(user: User | null) {
@@ -22,7 +39,7 @@ async function isAdmin(user: User | null) {
 export default function SubmitPage() {
   const router = useRouter();
 
-  const [, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const auth = new FirebaseAuth();
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
@@ -36,6 +53,26 @@ export default function SubmitPage() {
       }
     });
   }, [router]);
+
+  const [userData, setUserData] = useState<UserData[] | null>(null);
+  const adminHelper = new AdminHelper();
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const users = await adminHelper.getUsers();
+      /*const data = users.map((user) => {
+        return {
+          uid: user.uid,
+          email: "Example Email",
+          displayName: user.displayName,
+          emailVerified: user.emailVerified,
+          submissions: user.submissions,
+        };
+      });*/
+
+      // setUserData(data);
+    })();
+  }, [user]);
 
   return (
     <div>
