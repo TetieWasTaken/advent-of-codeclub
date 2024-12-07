@@ -48,8 +48,6 @@ export default function SubmitPage() {
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
       setUser(user);
-      console.log(user);
-      console.log(await isAdmin(user));
 
       if (!user) {
         router.push("/auth");
