@@ -35,8 +35,9 @@ export default async function handler(
     let payload;
     try {
       payload = jwt.verify(token, secretKey);
-    } catch (err) {
+    } catch (error) {
       res.status(401).json({ error: "Invalid or expired token" });
+      console.error(error);
       return;
     }
 
