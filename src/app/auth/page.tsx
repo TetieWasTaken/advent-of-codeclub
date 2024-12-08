@@ -45,7 +45,9 @@ export default function SignInPage() {
 
   const handleSignUp = async () => {
     try {
-      if (!newEmail.endsWith("@gsf.nl")) {
+      const whitelist = process.env.NEXT_PUBLIC_WHITELIST?.split(",") || [];
+
+      if (!newEmail.endsWith("@gsf.nl") && !whitelist.includes(newEmail)) {
         setError("Je kan alleen registreren met een @gsf.nl email adres.");
         return;
       }
