@@ -77,6 +77,8 @@ export default function Home() {
     });
   };
 
+  const [modalTask, setModalTask] = useState<Task | null>(null);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-800 text-gray-200">
@@ -109,9 +111,10 @@ export default function Home() {
               task.submitted
                 ? "bg-gray-800 border-gray-700"
                 : "bg-gray-700 border-gray-600 hover:border-green-600"
-            }`}
+            } cursor-pointer`}
+            onClick={() => setModalTask(task)}
           >
-            <div className="absolute top-3 right-3 text-gray-500 text-xl font-bold">
+            <div className="absolute top-3 right-3 text-gray-500 text-xl font-bold bg-gray-800 p-1 rounded">
               {index + 1} dec
             </div>
             <h2
@@ -203,6 +206,49 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      {modalTask && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg max-w-3xl w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">{modalTask.title}</h2>
+              <button
+                className="text-gray-500 hover:text-gray-300"
+                onClick={() => setModalTask(null)}
+              >
+                ✖
+              </button>
+            </div>
+            <div className="text-gray-400 mb-4">
+              {modalTask.description.split("\\n").map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < modalTask.description.split("\\n").length - 1 && (
+                    <>
+                      <br />
+                      <br />
+                    </>
+                  )}
+                </span>
+              ))}
+            </div>
+            <button
+              className={`font-medium py-2 px-4 rounded transition duration-300 ${
+                modalTask.submitted
+                  ? "bg-green-900 text-gray-500 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }`}
+              onClick={() => {
+                if (!modalTask.submitted) {
+                  router.push(`/submit?id=${btoa(modalTask.id)}`);
+                }
+              }}
+            >
+              Inleveren
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
