@@ -1,6 +1,7 @@
 import { formData } from "./types";
 import { addData } from "./firebase/addData";
 import { PutBlobResult } from "@vercel/blob";
+import imageCompression from "browser-image-compression";
 
 interface ExtendedPutBlobResult extends PutBlobResult {
   filePath: string;
@@ -13,32 +14,53 @@ class SubmitHelper {
     this.userId = userId;
   }
 
+  fetchUploadToken = async () => {
+    const response = await fetch("/api/ut", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ uid: this.userId }),
+    });
+    const { token } = await response.json();
+    return token;
+  };
+
   /**
-   * Store images in the public Uploads folder by calling the API
+   * Store an image in the public Uploads folder by calling the API
    * @internal
    * @param file - The file to store
    * @returns URL of the stored image
    */
-  private async storeImages(file: File): Promise<PutBlobResult> {
+  private async storeImage(file: File): Promise<PutBlobResult> {
     try {
-      const response = await fetch(`/api/upload?filename=${file.name}`, {
-        method: "POST",
-        body: file,
+      const uploadToken = await this.fetchUploadToken();
+
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
       });
 
-      const newBlob = await response.json() as PutBlobResult;
-      return newBlob;
+      const response = await fetch(
+        `/api/upload?filename=${compressedFile.name}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${uploadToken}`,
+          },
+          body: compressedFile,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      return await response.json();
     } catch (error) {
       console.warn("Error uploading file to storage");
       console.error(error);
-
-      // Not sure if this would work lol
-      return {
-        url: "",
-        downloadUrl: "",
-        pathname: "",
-        contentDisposition: "",
-      };
+      throw error;
     }
   }
 
@@ -51,7 +73,7 @@ class SubmitHelper {
   public async submit(formData: formData, id: string): Promise<void> {
     try {
       const imageUrls = await Promise.all(
-        formData.files.map((image) => this.storeImages(image)),
+        formData.files.map((image) => this.storeImage(image)),
       ) as ExtendedPutBlobResult[];
 
       const data = {
@@ -67,6 +89,7 @@ class SubmitHelper {
     } catch (error) {
       console.warn("Error while submitting form");
       console.error(error);
+      throw error;
     }
   }
 }

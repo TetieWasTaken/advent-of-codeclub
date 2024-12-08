@@ -175,6 +175,7 @@ export default function SubmitPage() {
                   id="files"
                   type="file"
                   name="files"
+                  accept="image/*"
                   multiple
                   onChange={handleFileChange}
                   className="block w-full text-gray-300 bg-gray-800 border border-gray-600 rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-white hover:file:bg-green-600"

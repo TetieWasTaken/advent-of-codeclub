@@ -10,7 +10,7 @@ import { requestData } from "@/firebase/requestData";
 
 const taskHelper = new TaskHelper(new Date());
 
-// TODO: Modals when opening task, no clipping of dec, max image size
+// TODO: Modals when opening task, no clipping of dec
 
 export default function Home() {
   const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
