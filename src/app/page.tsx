@@ -9,6 +9,8 @@ import type { Task } from "@/types";
 import { requestData } from "@/firebase/requestData";
 
 const taskHelper = new TaskHelper(new Date());
+// Debugging:
+// const taskHelper = new TaskHelper(new Date("2024-12-26"));
 
 // TODO: Modals when opening task, no clipping of dec
 
@@ -114,7 +116,11 @@ export default function Home() {
             } cursor-pointer`}
             onClick={() => setModalTask(task)}
           >
-            <div className="absolute top-3 right-3 text-gray-500 text-xl font-bold bg-gray-800 p-1 rounded">
+            <div
+              className={`absolute top-3 right-3 text-gray-500 text-xl font-bold p-1 rounded ${
+                task.submitted ? "bg-gray-800" : "bg-gray-700"
+              }`}
+            >
               {index + 1} dec
             </div>
             <h2

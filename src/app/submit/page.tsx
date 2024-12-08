@@ -77,6 +77,9 @@ export default function SubmitPage() {
     if (!taskId) return;
 
     const taskHelper = new TaskHelper(new Date());
+    // Debugging:
+    // const taskHelper = new TaskHelper(new Date("2024-12-26"));
+
     taskHelper.getVisibleTasks().then((tasks) => {
       const task = tasks.find((task) => task.id === taskId);
       if (task) {
