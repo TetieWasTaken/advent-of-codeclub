@@ -166,9 +166,10 @@ export default function SubmitPage() {
             key={user.uid}
             className="bg-gray-700 border border-gray-600 rounded-lg shadow-lg p-6 hover:shadow-xl hover:border-green-600 transition duration-300"
           >
-            <h2 className="text-2xl font-bold text-gray-100 mb-4">
+            <h2 className="text-2xl font-bold text-gray-100 mb-2">
               {user.displayName}
             </h2>
+            <p className="text-gray-400 mb-4">{user.uid}</p>
             <p className="text-gray-400 mb-2">
               <span className="font-semibold text-gray-300">Email:</span>{" "}
               {user.email}

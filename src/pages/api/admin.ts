@@ -25,7 +25,14 @@ export default async function handler(
 
       const id = atob(base64Id);
 
-      if (id == process.env.ADMIN_ID) {
+      const admins = process.env.ADMIN_ID?.split(",");
+
+      if (!admins) {
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+
+      if (admins.includes(id)) {
         res.status(200).json({ isAdmin: true });
       } else {
         res.status(403).json({ isAdmin: false });
