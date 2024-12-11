@@ -29,7 +29,7 @@ export default function SubmitPage() {
         router.push("/auth");
       }
     });
-  }, [router]);
+  }, [router, auth]);
 
   const handleInputChange = (
     e: { target: { name: string; value: string } },
@@ -88,7 +88,7 @@ export default function SubmitPage() {
         router.push("/");
       }
     });
-  }, [taskId]);
+  }, [taskId, router]);
 
   if (!user) return null;
 

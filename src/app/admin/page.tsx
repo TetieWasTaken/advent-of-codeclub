@@ -9,6 +9,7 @@ import { requestData } from "@/firebase/requestData";
 import { TaskHelper } from "@/tasks";
 import { ApiTask } from "@/types";
 import { updateData } from "@/firebase/updateData";
+import Image from "next/image";
 
 const taskHelper = new TaskHelper(new Date("2024-12-26"));
 
@@ -64,7 +65,7 @@ export default function SubmitPage() {
         }
       }
     });
-  }, [router]);
+  }, [router, auth]);
 
   const fetchUserInfo = async (userIds: string[]) => {
     const response = await fetch("/api/gu", {
@@ -149,7 +150,7 @@ export default function SubmitPage() {
 
       setUserData(data.filter((user) => user !== null) as UserData[]);
     })();
-  }, [user]);
+  }, [user, adminHelper]);
 
   const [allTasks, setAllTasks] = useState<ApiTask[]>([]);
   useEffect(() => {
@@ -286,9 +287,6 @@ export default function SubmitPage() {
                   }}
                 >
                   <p className="text-gray-400 mb-2">
-                    {/* Really no idea how to fix this one lol */}
-                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                    {/* @ts-ignore */}
                     {allTasks.find((task) => task.id === submission.id)
                       ?.title || "Unknown Task"}
                   </p>

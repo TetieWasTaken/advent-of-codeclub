@@ -13,7 +13,7 @@ const taskHelper = new TaskHelper(new Date());
 // Debugging:
 // const taskHelper = new TaskHelper(new Date("2024-12-26"));
 
-// TODO: Modals when opening task, no clipping of dec
+//TODO: change to Image instead of img
 
 export default function Home() {
   const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
@@ -23,8 +23,9 @@ export default function Home() {
 
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const auth = new FirebaseAuth();
+
   useEffect(() => {
+    const auth = new FirebaseAuth();
     auth.onAuthStateChanged((user) => {
       setUser(user);
       if (!user || user?.emailVerified === false) {
@@ -37,7 +38,7 @@ export default function Home() {
         });
       }
     });
-  }, [router, auth]);
+  }, [router]);
 
   useEffect(() => {
     if (!user) return;
@@ -67,7 +68,7 @@ export default function Home() {
 
               status = taskDoc.status;
               screenerNote = taskDoc.screenerNote;
-            } catch (error) {
+            } catch {
               status = undefined;
               screenerNote = undefined;
             }
@@ -282,6 +283,29 @@ export default function Home() {
             >
               Inleveren
             </button>
+
+            <div className="mt-4">
+              {modalTask.submitted && (
+                <div>
+                  <h3 className="text-xl font-semibold">Ingeleverd</h3>
+                  {modalTask.status === undefined
+                    ? (
+                      <p className="text-gray-500">
+                        In afwachting van beoordeling
+                      </p>
+                    )
+                    : modalTask.status
+                    ? <p className="text-green-500">Goedgekeurd</p>
+                    : <p className="text-red-500">Afgekeurd</p>}
+                  {modalTask.screenerNote && (
+                    <div>
+                      <h4 className="text-lg font-semibold mt-2">Opmerking</h4>
+                      <p className="text-gray-500">{modalTask.screenerNote}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

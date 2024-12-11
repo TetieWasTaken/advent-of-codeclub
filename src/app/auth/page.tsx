@@ -5,6 +5,7 @@ import { FirebaseAuth } from "@/firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FirebaseError } from "firebase/app";
 import { addData } from "@/firebase/addData";
+import { useMemo } from "react";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ export default function SignInPage() {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
 
-  const auth = new FirebaseAuth();
+  const auth = useMemo(() => new FirebaseAuth(), []);
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
