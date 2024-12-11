@@ -12,4 +12,6 @@ export interface ApiTask {
 
 export interface Task extends ApiTask {
   submitted?: boolean;
+  status?: boolean;
+  screenerNote?: string;
 }

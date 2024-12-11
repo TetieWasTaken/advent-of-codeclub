@@ -6,6 +6,11 @@ import { User } from "firebase/auth";
 import { FirebaseAuth } from "@/firebase/auth";
 import { AdminHelper } from "@/admin";
 import { requestData } from "@/firebase/requestData";
+import { TaskHelper } from "@/tasks";
+import { ApiTask } from "@/types";
+import { updateData } from "@/firebase/updateData";
+
+const taskHelper = new TaskHelper(new Date("2024-12-26"));
 
 interface AdminResponse extends Response {
   isAdmin: boolean;
@@ -16,7 +21,9 @@ interface UserForm {
   note: string;
   text: string;
   timestamp: string;
-  taskID: string;
+  id: string;
+  status: boolean | undefined;
+  screenerNote: string;
 }
 
 interface UserData {
@@ -144,6 +151,67 @@ export default function SubmitPage() {
     })();
   }, [user]);
 
+  const [allTasks, setAllTasks] = useState<ApiTask[]>([]);
+  useEffect(() => {
+    (async () => {
+      const tasks = await taskHelper.getVisibleTasks() as ApiTask[];
+      setAllTasks(tasks);
+    })();
+  }, []);
+
+  const [modalSubmission, setModalSubmission] = useState<UserForm | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [screenerNote, setScreenerNote] = useState("");
+
+  const setStatus = async (
+    status: boolean,
+    submission: UserForm | null,
+    uid: string | undefined,
+    screenerNote: string,
+  ) => {
+    if (!submission) return;
+    if (!uid) return;
+
+    if (screenerNote) {
+      if (screenerNote == "nonote") screenerNote = "";
+      await updateData(`users/${uid}/forms/${submission.id}/`, {
+        status,
+        screenerNote,
+      });
+    } else {
+      await updateData(`users/${uid}/forms/${submission.id}/`, { status });
+    }
+
+    const updatedUserData = userData?.map((user) => {
+      if (user.uid === uid) {
+        const updatedSubmissions = user.submissions.map((userSubmission) => {
+          if (userSubmission.timestamp === submission.timestamp) {
+            return { ...userSubmission, status, screenerNote };
+          }
+          return userSubmission;
+        });
+
+        return { ...user, submissions: updatedSubmissions };
+      }
+
+      return user;
+    });
+
+    if (!updatedUserData) return;
+
+    setUserData(updatedUserData);
+  };
+
+  const handleApprove = async () => {
+    await setStatus(true, modalSubmission, selectedUser?.uid, screenerNote);
+    setModalSubmission(null);
+  };
+
+  const handleReject = async () => {
+    await setStatus(false, modalSubmission, selectedUser?.uid, screenerNote);
+    setModalSubmission(null);
+  };
+
   if (!userData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-800 text-gray-200">
@@ -204,8 +272,26 @@ export default function SubmitPage() {
               {user.submissions.map((submission) => (
                 <div
                   key={submission.timestamp}
-                  className="bg-gray-800 rounded-lg p-4 border border-gray-600"
+                  className={`rounded-lg p-4 border border-gray-600 ${
+                    submission.status === undefined
+                      ? "bg-gray-800"
+                      : submission.status
+                      ? "bg-green-800"
+                      : "bg-red-800"
+                  }`}
+                  onClick={() => {
+                    setModalSubmission(submission);
+                    setSelectedUser(user);
+                    setScreenerNote(submission.screenerNote || "");
+                  }}
                 >
+                  <p className="text-gray-400 mb-2">
+                    {/* Really no idea how to fix this one lol */}
+                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                    {/* @ts-ignore */}
+                    {allTasks.find((task) => task.id === submission.id)
+                      ?.title || "Unknown Task"}
+                  </p>
                   <p className="text-gray-300 mb-2">{submission.text}</p>
                   <p className="text-gray-400 mb-2 italic">{submission.note}</p>
                   <div className="flex flex-wrap gap-2">
@@ -223,6 +309,72 @@ export default function SubmitPage() {
             </div>
           </div>
         ))}
+
+        {modalSubmission && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-gray-900 p-6 rounded-lg max-w-md w-full">
+              <h3 className="text-xl font-semibold text-green-400 mb-4">
+                Status
+              </h3>
+              <p className="text-gray-300 mb-2">
+                <span className="font-bold">Gebruiker:</span>{" "}
+                {selectedUser?.displayName || "Onbekende gebruiker"}
+              </p>
+              <p className="text-gray-300 mb-2">
+                <span className="font-bold">Opdracht:</span>{" "}
+                {allTasks.find((task) => task.id === modalSubmission.id)
+                  ?.title ||
+                  "Onbekende opdracht"}
+              </p>
+              <p className="text-gray-300 mb-2">
+                <span className="font-bold">Tekst:</span> {modalSubmission.text}
+              </p>
+              <p className="text-gray-300 mb-4 italic">
+                {modalSubmission.note}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {modalSubmission.images.map((url) => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt="Submission"
+                    className="w-16 h-16 object-cover rounded-md border border-gray-700"
+                  />
+                ))}
+              </div>
+              <label className="block text-gray-300 mb-2" htmlFor="note">
+                Notitie
+              </label>
+              <textarea
+                id="note"
+                className="w-full bg-gray-800 text-gray-300 p-2 rounded-lg"
+                value={screenerNote}
+                onChange={(e) => setScreenerNote(e.target.value)}
+              >
+              </textarea>
+              <div className="flex justify-end gap-4 mt-4">
+                <button
+                  onClick={handleReject}
+                  className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg"
+                >
+                  ✖ Afwijzen
+                </button>
+                <button
+                  onClick={handleApprove}
+                  className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
+                >
+                  ✅ Goedkeuren
+                </button>
+              </div>
+              <button
+                onClick={() => setModalSubmission(null)}
+                className="mt-4 text-gray-400 underline text-sm"
+              >
+                Sluiten
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

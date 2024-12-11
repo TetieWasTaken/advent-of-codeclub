@@ -7,6 +7,7 @@ import type { User } from "firebase/auth";
 import { TaskHelper, taskSubmitted } from "@/tasks";
 import type { Task } from "@/types";
 import { requestData } from "@/firebase/requestData";
+import { getDocument } from "@/firebase/getDocument";
 
 const taskHelper = new TaskHelper(new Date());
 // Debugging:
@@ -48,7 +49,30 @@ export default function Home() {
         const updatedTasks = await Promise.all(
           tasks.map(async (task) => {
             const submitted = await taskSubmitted(task.id, user!.uid);
-            return { ...task, submitted };
+
+            let status: boolean | undefined, screenerNote: string | undefined;
+
+            try {
+              const taskDoc = await getDocument(
+                `users/${user!.uid}/forms/${task.id}/`,
+                true,
+              );
+
+              if (taskDoc.error) {
+                status = undefined;
+                screenerNote = undefined;
+
+                return { ...task, submitted, status, screenerNote };
+              }
+
+              status = taskDoc.status;
+              screenerNote = taskDoc.screenerNote;
+            } catch (error) {
+              status = undefined;
+              screenerNote = undefined;
+            }
+
+            return { ...task, submitted, status, screenerNote };
           }),
         );
 
@@ -111,7 +135,13 @@ export default function Home() {
             key={index}
             className={`relative border rounded-lg shadow-lg p-6 hover:shadow-2xl hover:-translate-y-1 transition transform duration-300 ${
               task.submitted
-                ? "bg-gray-800 border-gray-700"
+                ? `border-gray-700 ${
+                  task.status === undefined
+                    ? "bg-gray-800"
+                    : task.status
+                    ? "bg-gray-800 border-green-600 border-2"
+                    : "bg-gray-800 border-red-600 border-2"
+                }`
                 : "bg-gray-700 border-gray-600 hover:border-green-600"
             } cursor-pointer`}
             onClick={() => setModalTask(task)}
