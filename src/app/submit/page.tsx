@@ -20,16 +20,15 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
-  const auth = new FirebaseAuth();
-
   useEffect(() => {
+    const auth = new FirebaseAuth();
     auth.onAuthStateChanged((user) => {
       setUser(user);
       if (!user || user?.emailVerified === false) {
         router.push("/auth");
       }
     });
-  }, [router, auth]);
+  }, [router]);
 
   const handleInputChange = (
     e: { target: { name: string; value: string } },

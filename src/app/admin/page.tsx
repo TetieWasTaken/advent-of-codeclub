@@ -9,7 +9,6 @@ import { requestData } from "@/firebase/requestData";
 import { TaskHelper } from "@/tasks";
 import { ApiTask } from "@/types";
 import { updateData } from "@/firebase/updateData";
-import Image from "next/image";
 
 const taskHelper = new TaskHelper(new Date("2024-12-26"));
 
@@ -52,8 +51,8 @@ export default function SubmitPage() {
   const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
-  const auth = new FirebaseAuth();
   useEffect(() => {
+    const auth = new FirebaseAuth();
     auth.onAuthStateChanged(async (user) => {
       setUser(user);
 
@@ -65,7 +64,7 @@ export default function SubmitPage() {
         }
       }
     });
-  }, [router, auth]);
+  }, [router]);
 
   const fetchUserInfo = async (userIds: string[]) => {
     const response = await fetch("/api/gu", {
@@ -104,9 +103,9 @@ export default function SubmitPage() {
   };
 
   const [userData, setUserData] = useState<UserData[] | null>(null);
-  const adminHelper = new AdminHelper();
   useEffect(() => {
     if (!user) return;
+    const adminHelper = new AdminHelper();
     (async () => {
       const users = await adminHelper.getUsers();
 
@@ -150,7 +149,7 @@ export default function SubmitPage() {
 
       setUserData(data.filter((user) => user !== null) as UserData[]);
     })();
-  }, [user, adminHelper]);
+  }, [user]);
 
   const [allTasks, setAllTasks] = useState<ApiTask[]>([]);
   useEffect(() => {
