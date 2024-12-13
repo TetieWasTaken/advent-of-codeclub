@@ -141,7 +141,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-800 text-gray-200 p-6">
+    <div className="min-h-screen bg-gray-800 text-gray-200 p-6 overflow-y-auto">
       <h1 className="text-4xl font-bold text-green-500 text-center mb-8">
         🎄 Advent of Code Club 🎄
       </h1>
@@ -232,7 +232,7 @@ export default function Home() {
 
       {modalTask && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg max-w-3xl w-full">
+          <div className="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg max-w-3xl w-full overflow-y-auto max-h-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">{modalTask.title}</h2>
               <button
