@@ -15,6 +15,15 @@ const taskHelper = new TaskHelper(new Date());
 
 //TODO: change to Image instead of img
 
+interface ExtendedTask extends Task {
+  submitted: boolean;
+  status?: boolean;
+  screenerNote?: string;
+  text?: string;
+  note?: string;
+  images?: string[];
+}
+
 export default function Home() {
   const [visibleTasks, setVisibleTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -118,7 +127,7 @@ export default function Home() {
     })();
   }, [user]);
 
-  const [modalTask, setModalTask] = useState<Task | null>(null);
+  const [modalTask, setModalTask] = useState<ExtendedTask | null>(null);
 
   if (loading) {
     return (
@@ -159,7 +168,7 @@ export default function Home() {
                 }`
                 : "bg-gray-700 border-gray-600 hover:border-green-600"
             } cursor-pointer`}
-            onClick={() => setModalTask(task)}
+            onClick={() => setModalTask(task as ExtendedTask)}
           >
             <div
               className={`absolute top-3 right-3 text-gray-500 text-xl font-bold p-1 rounded ${

@@ -16,7 +16,7 @@ interface AdminResponse extends Response {
   isAdmin: boolean;
 }
 
-interface UserForm {
+export interface UserForm {
   images: string[];
   note: string;
   text: string;
