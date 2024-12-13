@@ -52,6 +52,9 @@ export default function Home() {
             const submitted = await taskSubmitted(task.id, user!.uid);
 
             let status: boolean | undefined, screenerNote: string | undefined;
+            let text: string | undefined;
+            let note: string | undefined;
+            let images: string[] | undefined;
 
             try {
               const taskDoc = await getDocument(
@@ -62,20 +65,47 @@ export default function Home() {
               if (taskDoc.error) {
                 status = undefined;
                 screenerNote = undefined;
+                text = undefined;
+                note = undefined;
+                images = undefined;
 
-                return { ...task, submitted, status, screenerNote };
+                return {
+                  ...task,
+                  submitted,
+                  status,
+                  screenerNote,
+                  text,
+                  note,
+                  images,
+                };
               }
 
               status = taskDoc.status;
               screenerNote = taskDoc.screenerNote;
+              text = taskDoc.text;
+              note = taskDoc.note;
+              images = taskDoc.images;
             } catch {
               status = undefined;
               screenerNote = undefined;
+              text = undefined;
+              note = undefined;
+              images = undefined;
             }
 
-            return { ...task, submitted, status, screenerNote };
+            return {
+              ...task,
+              submitted,
+              status,
+              screenerNote,
+              text,
+              note,
+              images,
+            };
           }),
         );
+
+        console.log(updatedTasks);
 
         setVisibleTasks(updatedTasks);
       } catch (error) {
@@ -87,22 +117,6 @@ export default function Home() {
       }
     })();
   }, [user]);
-
-  const [expandedDescription, setExpandedDescription] = useState<Set<string>>(
-    new Set(),
-  );
-
-  const toggleDescription = (taskId: string) => {
-    setExpandedDescription((prev) => {
-      const newExpanded = new Set(prev);
-      if (newExpanded.has(taskId)) {
-        newExpanded.delete(taskId);
-      } else {
-        newExpanded.add(taskId);
-      }
-      return newExpanded;
-    });
-  };
 
   const [modalTask, setModalTask] = useState<Task | null>(null);
 
@@ -182,46 +196,9 @@ export default function Home() {
                     )}
                 </span>
               ))}
-              {task.description.length > 100 &&
-                !expandedDescription.has(task.id) && (
+              {task.description.length > 100 && (
                 <>
                   {"... "}
-                  <button
-                    onClick={() => toggleDescription(task.id)}
-                    className={`${
-                      task.submitted ? "text-gray-500" : "text-green-500"
-                    } inline-block`}
-                  >
-                    Uitklappen
-                  </button>
-                </>
-              )}
-              {expandedDescription.has(task.id) && (
-                <>
-                  {task.description.slice(100).split("\\n").map((
-                    line,
-                    index,
-                  ) => (
-                    <span key={index}>
-                      {line}
-                      {index <
-                          task.description.slice(100).split("\\n").length - 1 &&
-                        (
-                          <>
-                            <br />
-                            <br />
-                          </>
-                        )}
-                    </span>
-                  ))}{" "}
-                  <button
-                    onClick={() => toggleDescription(task.id)}
-                    className={`${
-                      task.submitted ? "text-gray-500" : "text-green-500"
-                    } inline-block`}
-                  >
-                    Inklappen
-                  </button>
                 </>
               )}
             </div>
@@ -301,6 +278,37 @@ export default function Home() {
                     <div>
                       <h4 className="text-lg font-semibold mt-2">Opmerking</h4>
                       <p className="text-gray-500">{modalTask.screenerNote}</p>
+                    </div>
+                  )}
+                  {modalTask.text && (
+                    <div>
+                      <h4 className="text-lg font-semibold mt-2">
+                        Jouw antwoord
+                      </h4>
+                      <p className="text-gray-500">{modalTask.text}</p>
+                    </div>
+                  )}
+                  {modalTask.images && (
+                    <div>
+                      <h4 className="text-lg font-semibold mt-2">
+                        Afbeeldingen
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 mt-2">
+                        {modalTask.images.map((image, index) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt="Afbeelding"
+                            className="w-full rounded-lg"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {modalTask.note && (
+                    <div>
+                      <h4 className="text-lg font-semibold mt-2">Notitie</h4>
+                      <p className="text-gray-500">{modalTask.note}</p>
                     </div>
                   )}
                 </div>
