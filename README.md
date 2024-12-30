@@ -1,49 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with
-[`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Built with ❤️ for High Seas 2024-2025
 
-## Getting Started
+<img src="/github/images/highseas/banner.svg" width="100" height="100"> <img src="/github/images/highseas/flag.svg" width="100" height="100">
 
-First, run the development server:
+<img src="https://img.shields.io/endpoint?url=https://waka.hackclub.com/api/compat/shields/v1/U078EKGQW2H/interval:all_time/project:advent-of-codeclub&label=advent-of-codeclub&color=white">
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Advent of Codeclub is an advent calendar made for a (dutch!) coding club at school. It is built with <img src="/.github/images/next/logo.svg" width="20" height="20"> Next.js, <img src="/.github/images/react/logo.svg" width="20" height="20"> React, <img src="/.github/images/tailwind/logo.svg" width="20" height="20"> Tailwind CSS, and <img src="/github/images/typescript/logo.svg" width="20" height="20"> TypeScript. It uses <img src="/.github/images/firebase/logo.svg" width="20" height="20"> Firebase for authentication and <img src="/.github/images/firebase/firestore.svg" width="20" height="20"> Firestore for the database.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the
-result.
+Advent of Codeclub is hosted on **https://advent-of-codeclub.vercel.app/** using <img src="/.github/images/vercel/logo.svg" width="20" height="20"> Vercel.
 
-You can start editing the page by modifying `app/page.tsx`. The page
-auto-updates as you edit the file.
+## Pages and Features
 
-This project uses
-[`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
-to automatically optimize and load [Geist](https://vercel.com/font), a new font
-family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Building locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To build the project locally, you need to have Deno installed. See the [Deno installation guide](https://docs.deno.com/runtime/getting_started/installation/) for more information.
 
-You can check out
-[the Next.js GitHub repository](https://github.com/vercel/next.js) - your
-feedback and contributions are welcome!
+1. Clone the repository
+2. Set up the environment variables in a `.env` file in the root directory
+  You need to set the following environment variables:
+  - Vercel blob token
+  - Firebase API key and configuation
+  - Firebase service account key
+  - IDs of admin accounts (separated by commas)
+  - JWT secret key
 
-## Deploy on Vercel
+3. Run `deno run dev` in the root directory
+4. Open `http://localhost:3000` in your browser
 
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
-
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
-for more details.
+All rights to brand logos belong to their respective owners. This project is not affiliated with any of the brands mentioned above.
