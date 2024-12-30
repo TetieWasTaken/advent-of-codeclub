@@ -7,8 +7,8 @@ export default function FinishedPage() {
         <h2 className="text-xl font-semibold mb-4">Het is voorbij!</h2>
         <p>De Advent of Codeclub is voorbij. Bedankt voor het meedoen!</p>
         <p>
-          (Sorry, Advent of Codeclub already ended. If you're from High Seas,
-          please check the Github readme for screenshots.)
+          (Sorry, Advent of Codeclub already ended. If you have come from High
+          Seas, please check the Github readme for screenshots.)
         </p>
       </div>
     </div>
