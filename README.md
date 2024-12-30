@@ -10,7 +10,42 @@ Advent of Codeclub is hosted on **https://advent-of-codeclub.vercel.app/** using
 
 ## Pages and Features
 
+### Main Page (/)
+- Displays every day of the advent calendar up to the current day
+- Shows whether the user has submitted a solution for the day
+- Shows whether the solution was correct or not
+- Shows the user's username in the top right corner
+- An expanded view of the challenge can be opened by clicking on the challenge, which shows the full challenge description, the user's solution, if it was correct, and additionally a note from the admin
 
+<img src="/.github/images/screenshots/home.png" width="500">
+<img src="/.github/images/screenshots/expanded.png" width="500">
+
+### Submit Page (/submit?id=)
+- Allows the user to submit a solution for the selected challenge
+- Submissions can be submitted as text or as a file (using Vercel glob), with an additional field for comments
+- The user can only submit one solution per challenge
+- The user can only submit solutions for challenges that have already been released
+
+<img src="/.github/images/screenshots/submit.png" width="500">
+
+### Authentication Page (/auth)
+- Allows the user to sign in by email and password
+- Uses Firebase authentication to sign in and sign out, with email verification
+- The user can only access any of the other pages when signed in
+- If already signed in, the user can return or sign out
+
+<img src="/.github/images/screenshots/auth.png" width="500">
+<img src="/.github/images/screenshots/auth_back.png" width="500">
+<img src="/.github/images/screenshots/verification.png" width="500">
+<img src="/.github/images/screenshots/verified.png" width="500">
+
+### Admin Page (/admin)
+- Allows the admin to view all submissions for all challenges from all users
+- The admin can view the user's solution, comments, and decide whether the solution was correct with an optional note
+- The admin can also view the user's firebase ID, email, verification status, and dates of creation, last sign-in and last seen
+- The admin page is only accessible to users with admin privileges, provided in the environment variables and uses JWT for authentication
+
+<img src="/.github/images/screenshots/admin.png" width="500">
 
 ## Building locally
 
