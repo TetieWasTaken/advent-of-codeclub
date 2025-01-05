@@ -6,8 +6,6 @@ Built with ❤️ for High Seas 2024-2025
 
 Advent of Codeclub is an advent calendar made for a (dutch!) coding club at school. It is built with <img src="/.github/images/next/logo.svg" width="20" height="20"> Next.js, <img src="/.github/images/react/logo.svg" width="20" height="20"> React, <img src="/.github/images/tailwind/logo.svg" width="20" height="20"> Tailwind CSS, and <img src="/.github/images/typescript/logo.svg" width="20" height="20"> TypeScript. It uses <img src="/.github/images/firebase/logo.svg" width="20" height="20"> Firebase for authentication and <img src="/.github/images/firebase/firestore.svg" width="20" height="20"> Firestore for the database.
 
-\[!\] **Since 26 dec, the website cannot be accessed. This is for security and privacy reasons.** (Please see screenshots below)
-
 <img src="/.github/images/screenshots/flow.gif" width="500">
 
 ## Pages and Features
