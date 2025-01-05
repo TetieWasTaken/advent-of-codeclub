@@ -6,9 +6,7 @@ Built with ❤️ for High Seas 2024-2025
 
 Advent of Codeclub is an advent calendar made for a (dutch!) coding club at school. It is built with <img src="/.github/images/next/logo.svg" width="20" height="20"> Next.js, <img src="/.github/images/react/logo.svg" width="20" height="20"> React, <img src="/.github/images/tailwind/logo.svg" width="20" height="20"> Tailwind CSS, and <img src="/.github/images/typescript/logo.svg" width="20" height="20"> TypeScript. It uses <img src="/.github/images/firebase/logo.svg" width="20" height="20"> Firebase for authentication and <img src="/.github/images/firebase/firestore.svg" width="20" height="20"> Firestore for the database.
 
-Advent of Codeclub is hosted on **https://advent-of-codeclub.vercel.app/** using <img src="/.github/images/vercel/logo.png" width="20" height="20"> Vercel. Vercel provides the image storage, deployments, analytics, and logs for the project.
-
-\[!\] **Since 26 dec, the website is redirected to /finished and cannot be accessed. This is for security and privacy reasons.** (Please see screenshots below)
+\[!\] **Since 26 dec, the website cannot be accessed. This is for security and privacy reasons.** (Please see screenshots below)
 
 <img src="/.github/images/screenshots/flow.gif" width="500">
 
